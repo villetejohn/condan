@@ -1,0 +1,20 @@
+extends ../layouts/master
+
+block content
+  form.form-signin(method='POST', action='/user/register')
+    .form-group
+      label(for='name') Name
+      input#name.form-control(type='text', placeholder='Name', name="name")
+    .form-group
+      label(for='userEmail') Email
+      input#userEmail.form-control(type='email', placeholder='Email', name="email")
+    .form-group
+      label(for='userName') Username
+      input#userName.form-control(type='text', placeholder='Username', name="username")
+    .form-group
+      label(for='userPass') Password
+      input#userPass.form-control(type='password', placeholder='Password', name="password")
+    .form-group
+      label(for='userPass2') Confirm
+      input#userPass2.form-control(type='password', placeholder='Confirm', name="password2")
+    button.btn.btn-primary(type='submit') Submit

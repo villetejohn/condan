@@ -1,0 +1,19 @@
+extends ../layouts/master
+
+block content
+
+  .row
+    .container
+      .col-md-8.mt-3
+          form(method='POST', action='/dashboard/incident-report')
+              input(type='hidden', name='author' value='#{user.name}')
+              input(type='hidden', name='authorId' value='#{user._id}')
+              .form-group
+                  label(for='issue') Issue #{user._id}
+                  textarea#issue.form-control(rows='3', name="issue")
+              .form-group
+                  label(for='location') Location
+                  input#location.form-control(type='text', name="location")
+              button.btn.btn-primary.mb-2(type='submit') Report
+
+         

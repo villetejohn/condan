@@ -1,0 +1,35 @@
+extends ../layouts/master
+
+block styles 
+  link(rel='stylesheet', href='/stylesheets/fullcalendar.css')
+  link(rel='stylesheet', href='/stylesheets/calendar.css')
+
+block scripts
+  script(src='/javascripts/moment.js')
+  script(src='/bower_components/jquery/dist/jquery.js') 
+  script(src='/javascripts/fullcalendar.js')
+  script(src='/javascripts/calendar.js')
+
+block content
+  .container
+    .row.mt-3
+      .col-md-8
+        #calendar
+      .col-md-4
+        form(method='POST', action='/dashboard/booked-amenities')
+          input(type='hidden', name='bookedById' value='#{user._id}')
+          input(type='hidden', name='bookedByName' value='#{user.name}')
+          .form-group
+            label(for='amenity') Choose Amenity
+            select#amenity.form-control(name="amenity")
+              option Pool
+              option Karaoke Room
+              option Gym
+          .form-group
+              label(for='scheduleStart') Schedule
+              input.form-control(type='datetime-local', name="scheduleStart")
+          .form-group
+              label(for='scheduleEnd') Book Until
+              input.form-control(type='datetime-local', name="scheduleEnd")
+          button.btn.btn-primary.mb-2(type='submit') Book
+

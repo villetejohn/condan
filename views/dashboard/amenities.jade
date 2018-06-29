@@ -1,0 +1,13 @@
+extends ../layouts/master
+
+block content
+  .container
+    .row
+      .col-md-12
+        form(method='POST', action='/dashboard/amenities')
+          .form-group
+            label(for='amenity') Amenities
+            select#amenity.form-control(name="amenity")
+              option Pool
+              option Karaoke Room
+              option Gym

@@ -1,0 +1,19 @@
+extends ../layouts/master
+
+block nav
+
+block content
+  form.form-signin.text-center(method='POST', action='/user/login')
+    h1.h2.mb-5.font-weight-normal CondA
+    .form-group
+      label.sr-only(for='userName') Username
+      input.form-control(type='text', placeholder='Username', required='', autofocus='', name="username")
+
+    .form-group
+      label.sr-only(for='userPassword') Password
+      input.form-control(type='password', placeholder='Password', required='', name="password")
+
+    button.btn.btn-md.btn-primary.btn-block.mb-3(type='submit') Sign in
+
+    span
+      a(href='/user/register') Register

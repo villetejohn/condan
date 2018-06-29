@@ -1,0 +1,22 @@
+extends ../layouts/master
+
+block content
+
+  .row
+    .container
+      .col-md-8.mt-3 Announcement #{user._id}
+          form(method='POST', action='/dashboard/announcement')
+              input(type='hidden', name='author' value='#{user.name}')
+              input(type='hidden', name='authorId' value='#{user._id}')
+              .form-group
+                  label(for='title') Title
+                  input.form-control(type='text', name="title")
+              .form-group
+                  label(for='content') Content
+                  textarea.form-control(rows='3', name="content")
+              .form-group
+                  label(for='schedule') Schedule
+                  input.form-control(type='datetime-local', name="schedule")
+              button.btn.btn-primary.mb-2(type='submit') Report
+
+         
