@@ -6,13 +6,19 @@ var User = require('../models/user');
 var Incident = require('../models/incident-report');
 var Announcement = require('../models/announcement');
 var BookedAmenity = require('../models/booked-amenities');
+var { check, validationResult } = require('express-validator/check');
 
 
 // Route: dashboard/
 // GET Request
 router.get('/', function(req, res, next) {
-    if (req.user)
+    if (req.user){
+        // req.session.sessionFlash = {
+        //     type: 'success',
+        //     message: 'This is a flash message using custom middleware and express-session.'
+        // }
         res.redirect('dashboard/home');
+    }
     else
         res.redirect('/');
 });
@@ -58,34 +64,78 @@ router.get('/home', function(req, res, next) {
 // Route: dashboard/incident-report
 // GET Request
 router.get('/incident-report', function(req, res, next) {
-    res.render('dashboard/incident-report');
+    // Load incidents reports created by user
+    Incident.find({'authorId': req.user._id}, null, {sort: '-created_at'}, function(err, incidents) {
+        if(err) {
+            console.log(err);
+        } else {
+            var incidentDates = incidents.map(function(incident) {
+                return moment(incident.created_at).fromNow();
+						});
+            res.render('dashboard/incident-report', {
+                incidents: incidents,
+                incidentDates: incidentDates,
+            });
+        }
+    });
 });
 
 // Route: dashboard/incident-report
 // POST Request
-router.post('/incident-report', function(req, res, next) {
-    const authorId = req.body.authorId;
-    const author = req.body.author;
-    const issue = req.body.issue;
-    const location = req.body.location;
+router.post('/incident-report', [
+		check('issue').not().isEmpty().withMessage('Please indicate the issue'),
+		check('location').not().isEmpty().withMessage('Please indicate the location')
+], function(req, res, next) {
+	const authorId = req.body.authorId;
+	const author = req.body.author;
+	const issue = req.body.issue;
+	const location = req.body.location;
+					
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		Incident.find({'authorId': req.user._id}, null, {sort: '-created_at'}, function(err, incidents) {
+				if(err) {
+						console.log(err);
+				} else {
+						var incidentDates = incidents.map(function(incident) {
+								return moment(incident.created_at).fromNow();
+						});
+						console.log(formDetails);
+						res.render('dashboard/incident-report', {
+								incidents: incidents,
+								incidentDates: incidentDates,
+								user: {
+									name: author,
+									_id: authorId
+								},
+								formDetails: {
+									location: location,
+									issue: issue
+								},
+								errors: errors.array()
+						});
+				}
+		});
+	} else {
+		var newIncident = new Incident( {
+				authorId: authorId,
+				author: author,
+				issue: issue,
+				location: location,
+		});
 
-    var newIncident = new Incident( {
-        authorId: authorId,
-        author: author,
-        issue: issue,
-        location: location,
-    });
+		newIncident.save(function(err) {
+				if(err) {
+						console.log(err);
+						return;
+				} else {
+						
+						res.redirect('/dashboard/incident-report');
+				}
+		});
+		
+	}
 
-    newIncident.save(function(err) {
-        if(err) {
-            console.log(err);
-            return;
-        } else {
-            res.redirect('/dashboard/home');
-            console.log('Incident Added!');
-        }
-    });
-    
 });
 
 // Route: dashboard/view-reports

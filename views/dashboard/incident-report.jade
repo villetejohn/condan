@@ -1,19 +1,42 @@
 extends ../layouts/master
 
 block content
+	.container
+		.row
+			.col-md-8.mt-3
+				.my-3.p-3.bg-white.rounded.box-shadow
+					h6.border-bottom.border-gray.pb-2.mb-0 Your Incident Reports
 
-  .row
-    .container
-      .col-md-8.mt-3
-          form(method='POST', action='/dashboard/incident-report')
-              input(type='hidden', name='author' value='#{user.name}')
-              input(type='hidden', name='authorId' value='#{user._id}')
-              .form-group
-                  label(for='issue') Issue #{user._id}
-                  textarea#issue.form-control(rows='3', name="issue")
-              .form-group
-                  label(for='location') Location
-                  input#location.form-control(type='text', name="location")
-              button.btn.btn-primary.mb-2(type='submit') Report
+					if incidents.length > 0
+						each incident, i in incidents
+							.media.text-muted.pt-3
+								p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
+									strong.d-block.text-gray-dark #{incident.location} 
+										span.badge.badge-secondary #{incident.status}
+									span.d-block #{incident.issue}
+									span.d-block.text-muted.pt-2 You reported this #{incidentDates[i]}
 
-         
+			.col-md-4.mt-3
+				form(method='POST', action='/dashboard/incident-report')
+					input(type='hidden', name='author' value='#{user.name}', required='true')
+					input(type='hidden', name='authorId' value='#{user._id}', required='true')
+				
+					if formDetails
+						.form-group
+								label(for='issue') Issue
+								textarea#issue.form-control(rows='3', name="issue", required='true') #{formDetails.issue}
+						.form-group
+								label(for='location') Location
+								input#location.form-control(type='text', name="location", required='true', value='#{formDetails.location}')
+					else
+						.form-group
+								label(for='issue') Issue
+								textarea#issue.form-control(rows='3', name="issue", required='true')
+						.form-group
+								label(for='location') Location
+								input#location.form-control(type='text', name="location", required='true')
+
+					if errors
+						p.text-danger.mt-3 #{errors[0].msg}
+					button.btn.btn-primary.mb-2(type='submit') Report
+
