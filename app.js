@@ -6,6 +6,7 @@ var logger = require('morgan');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var session = require('express-session');
+var expressValidator = require('express-validator');
 var flash = require('express-flash')
 var cookieSession = require('cookie-session');
 var config = require('./config/database');
@@ -14,6 +15,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var dashboardRouter = require('./routes/dashboard');
 var apiRouter = require('./routes/api');
+
 
 // Database connection
 mongoose.connect(config.database);
@@ -33,7 +35,39 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieSession({
     keys: ['secret']
 }));
+
+// Express session middleware
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true,
+}));
+
+// Express message middleware
 app.use(flash());
+app.use(function(req, res, next){
+  res.locals.sessionFlash = req.session.sessionFlash;
+  delete req.session.sessionFlash;
+  next();
+});
+
+// Express validator middleware
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+    var namespace = param.split('.')
+    , root = namespace.shift()
+    , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param: formParam,
+      msg: msg,
+      value: value
+    };
+  }
+}));
 
 // Login Authentication Using Passportjs
 require('./config/passport')(passport); 
