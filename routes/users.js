@@ -4,7 +4,6 @@ var bcrypt = require('bcryptjs');
 var passport = require('passport')
 var bodyParser = require('body-parser');
 var { check, validationResult } = require('express-validator/check');
-
 var User = require('../models/user');
 
 // Route:  /user/register
@@ -16,11 +15,20 @@ router.get('/register', function(req, res, next) {
 // Route: /user/register
 // POST Request
 router.post('/register', [
-  check('name').isEmpty(),
-  check('email').isEmpty(),
-  check('email').isEmail(),
-  check('username').isEmpty(),
-  check('password').isEmpty(),
+  check('name').not().isEmpty().withMessage('Please enter your name'),
+  check('email').not().isEmpty().withMessage('Please enter your email'),
+  check('email').isEmail().withMessage('Please enter a valid email'),
+  check('email').custom(async function(value) {
+    var user = await User.find({'email': value});
+    return user.length == 0;
+  }).withMessage('E-mail is already in use'),
+  check('username').not().isEmpty().withMessage('Please enter your username'),
+  check('password').not().isEmpty().withMessage('Please enter your password'),
+  check('password2').not().isEmpty().custom(async (value, {req}) => {
+    if (value!== req.body.password) {
+      throw new Error('Password did not match');
+    }
+  })
 ], function(req, res, next) {
   const name = req.body.name;
   const email = req.body.email;
@@ -28,38 +36,45 @@ router.post('/register', [
   const password = req.body.password;
   const password2 = req.body.password2;
 
-  // var errors = req.validationErrors();
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.render('user/register', {  
+      errors: errors.array(),
+      formDetails: {
+        name: name,
+        email: email,
+        username: username,
+      }
+    });
+    return;
+    
+  } else {
+    var newUser = new User( {
+      name: name,
+      email: email,
+      username: username,
+      password: password
+    });
   
-  // if(errors) {
-  //   res.render('register', {errors: errors});
-  // } else {
-
-  // }
-
-  var newUser = new User( {
-    name: name,
-    email: email,
-    username: username,
-    password: password
-  });
-
-  bcrypt.genSalt(10, function(err, salt) {
-    bcrypt.hash(newUser.password, salt, function(err, hash) {
-      (err) ? console.log(err) : '';
-
-      newUser.password = hash;
-      newUser.save(function(err) {
-        if(err) {
-          console.log(err);
-          return;
-        } else {
-          // res.flash('success', 'You are now registered and can log in');
-          res.redirect('/');
-          console.log('save!');
-        }
+    bcrypt.genSalt(10, function(err, salt) {
+      bcrypt.hash(newUser.password, salt, function(err, hash) {
+        (err) ? console.log(err) : '';
+  
+        newUser.password = hash;
+        newUser.save(function(err) {
+          if(err) {
+            console.log(err);
+            return;
+          } else {
+            // res.flash('success', 'You are now registered and can log in');
+            res.redirect('/');
+            console.log('save!');
+          }
+        });
       });
     });
-  });
+  }
+
 });
 
 // Route: /user/login
