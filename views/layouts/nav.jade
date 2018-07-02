@@ -7,13 +7,17 @@ block nav
 				ul.navbar-nav.nav-right
 					if user
 						li.nav-item.active
-							a.nav-link(href='#') Home
+							a.nav-link(href='/dashboard/home') Home
 						li.nav-item
 							a.nav-link(href='/dashboard/incident-report') Indicent Reports
 						li.nav-item
-							a.nav-link(href='#') Announcements
+							a.nav-link(href='/dashboard/announcement') Announcements
+						li.nav-item
+							a.nav-link(href='/dashboard/booked-amenities') Book Amenities
 						li.nav-item
 							a.nav-link(href='/user/logout') Logout
 						if user.is_admin
 							li.nav-item
 								a.nav-link(href='/dashboard/view-reports') View Reports
+							li.nav-item
+								a.nav-link(href='/dashboard/generate-reports') Generate Reports

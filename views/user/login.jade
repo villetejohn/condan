@@ -1,19 +1,24 @@
 extends ../layouts/master
 
-block nav
+block styles
+  link(rel='stylesheet', href='/stylesheets/user/login.css')
 
 block content
-  form.form-signin.text-center(method='POST', action='/user/login')
-    h1.h2.mb-5.font-weight-normal CondA
-    .form-group
-      label.sr-only(for='userName') Username
-      input.form-control(type='text', placeholder='Username', required='', autofocus='', name="username")
+  .container
+    .row.text-center
+      form.form-signin(method='POST', action='/user/login')
+        img.mb-4(src='https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg', alt='CondAn', width='72', height='72')
+        h1.h3.mb-3.font-weight-normal Please sign in
+        label.sr-only(for='userName') Username
+        input.form-control(type='text', placeholder='Username', required='true', autofocus='', name="username")
 
-    .form-group
-      label.sr-only(for='userPassword') Password
-      input.form-control(type='password', placeholder='Password', required='', name="password")
+        label.sr-only(for='userPassword') Password
+        input.form-control(type='password', placeholder='Password', required='true', name="password")
 
-    button.btn.btn-md.btn-primary.btn-block.mb-3(type='submit') Sign in
+        div.mb-3
+          a(href='/user/register') Register
 
-    span
-      a(href='/user/register') Register
+        button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign in
+        p.mt-5.mb-3.text-muted &copy; 2017-2018
+
+

@@ -9,29 +9,28 @@ html
 
   body
     block nav
-      nav.navbar.navbar-expand-lg.navbar-light.bg-light
-          a.navbar-brand(href='#') Condan
-          button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarNav')
-            span.navbar-toggler-icon
-          #navbarNav.collapse.navbar-collapse
-            ul.navbar-nav.nav-right
-              if user
-                li.nav-item.active
-                  a.nav-link(href='/dashboard/home') Home
-                li.nav-item
-                  a.nav-link(href='/dashboard/incident-report') Indicent Reports
-                li.nav-item
-                  a.nav-link(href='/dashboard/announcement') Announcements
-                li.nav-item
-                  a.nav-link(href='/dashboard/booked-amenities') Book Amenities
-                li.nav-item
-                  a.nav-link(href='/user/logout') Logout
-                if user.is_admin
+      if user
+        nav.navbar.navbar-expand-lg.navbar-light.bg-light
+            a.navbar-brand(href='#') Condan
+            button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarNav')
+              span.navbar-toggler-icon
+            #navbarNav.collapse.navbar-collapse
+              ul.navbar-nav.nav-right
+                  li.nav-item.active
+                    a.nav-link(href='/dashboard/home') Home
                   li.nav-item
-                    a.nav-link(href='/dashboard/view-reports') View Reports
+                    a.nav-link(href='/dashboard/incident-report') Indicent Reports
                   li.nav-item
-                    a.nav-link(href='/dashboard/generate-reports') Generate Reports
-
+                    a.nav-link(href='/dashboard/announcement') Announcements
+                  li.nav-item
+                    a.nav-link(href='/dashboard/booked-amenities') Book Amenities
+                  li.nav-item
+                    a.nav-link(href='/user/logout') Logout
+                  if user.is_admin
+                    li.nav-item
+                      a.nav-link(href='/dashboard/view-reports') View Reports
+                    li.nav-item
+                      a.nav-link(href='/dashboard/generate-reports') Generate Reports
     block content
   
   
