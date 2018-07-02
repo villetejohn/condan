@@ -1,31 +1,26 @@
 extends ../layouts/master
 
+block styles
+  link(rel='stylesheet', href='/stylesheets/home.css')
 block content
-  .container-fluid
+  .container
     .row
       .col-md-12
-        if (incidents.length > 0)
-          | Reports
-          each incident, i in incidents
-            .card.mb-2
-              h6.card-header #{incident.status}
-              .card-body
-                h5.card-title #{incident.location}
-                p.card-text #{incident.issue}
-                p.card-text.text-muted.small #{incidentDates[i]}
-        else 
-          p.text-muted Nothing to show for Incident Reports
-        
-        | Announcements
-        if (announcements)
-          each announcement, i in announcements
-            .card.mb-2
-              h6.card-header #{announcement.title}
-              .card-body
-                h5.card-title #{announcement.schedule}
-                p.card-text #{announcement.content}
-                p.card-text.text-muted.small #{'in ' + announceDates[i]}
-        else
-          p.text-muted No announcements to show
+        .my-3.p-3.bg-white.rounded.box-shadow
+          h6.border-bottom.border-gray.pb-2.mb-0 Announcements
 
- 
+          if announcements
+            each announcement, i in announcements
+              .media.text-muted.pt-3
+                p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
+                  strong.d-block.text-gray-dark #{announcement.title}
+                  span.d-block #{announcement.content}
+                  span.d-block.text-muted.pt-2 #{'in ' + announceDates[i]}
+          else 
+            .media.text-muted.pt-3
+              p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
+                strong.d-block.text-gray-dark No Announcements
+
+          small.d-block.text-right.mt-3
+            a(href='#') View all announcements
+        
