@@ -7,18 +7,20 @@ block content
   .container
     .row.text-center
       form.form-signin(method='POST', action='/user/login')
-        img.mb-4(src='https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg', alt='CondAn', width='72', height='72')
-        h1.h3.mb-3.font-weight-normal Please sign in
+        //- img.mb-4(src='https://getbootstrap.com/docs/4.1/assets/brand/bootstrap-solid.svg', alt='CondAn', width='72', height='72')
+        h1.h3.mb-3.font-weight-normal CondAn
         label.sr-only(for='userName') Username
         input.form-control(type='text', placeholder='Username', required='true', autofocus='', name="username")
 
         label.sr-only(for='userPassword') Password
         input.form-control(type='password', placeholder='Password', required='true', name="password")
 
-        div.mb-3
+        div.mb-3.mt-2
           a(href='/user/register') Register
 
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign in
-        p.mt-5.mb-3.text-muted &copy; 2017-2018
+        //- p.mt-5.mb-3.text-muted &copy; 2017-2018
 
-
+        if messages
+          each message in messages
+            p.text-danger.mt-3 #{message}

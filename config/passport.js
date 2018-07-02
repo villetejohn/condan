@@ -12,7 +12,7 @@ module.exports = function(passport) {
             User.findOne({username: username}, function(err, user) {
                 if (err) throw err;
                 if (!user) {
-                    return done(null, false, { message: 'No user found' });
+                    return done(null, false, { message: 'Username or password is wrong' });
                 }
                 
                 //Match Password
@@ -21,7 +21,7 @@ module.exports = function(passport) {
                     if(isMatch) {
                         return done(null, user);
                     } else {
-                        return done(null, false, {message: 'No user found'});
+                        return done(null, false, { message: 'Username or password is wrong'});
                     }
                 });
             });
