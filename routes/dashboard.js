@@ -195,30 +195,60 @@ router.get('/announcement', function(req, res) {
 
 // Route: dashboard/announcements
 // POST Request
-router.post('/announcement', function(req, res, next) {
+router.post('/announcement', [
+	check('title').not().isEmpty().withMessage('Please indicate title'),
+	check('content').not().isEmpty().withMessage('Please indicate content'),
+	check('schedule').not().isEmpty().withMessage('Please indicate schedule'),
+	check('schedule').custom(async function(value) {
+
+	})
+], function(req, res, next) {
     const authorId = req.body.authorId;
     const author = req.body.author;
     const schedule = req.body.schedule;
     const title = req.body.title;
-    const content = req.body.content;
-    
-    var newAnnouncement = new Announcement( {
-        authorId: authorId,
-        author: author,
-        schedule: schedule,
-        title: title,
-        content: content
-    });
+		const content = req.body.content;
+		
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			var formDetails = {
+				schedule: schedule,
+				title: title,
+				content: content};
+				console.log(formDetails);
 
-    newAnnouncement.save(function(err) {
-        if(err) {
-            console.log(err);
-            return;
-        } else {
-            res.redirect('/dashboard/announcement');
-            console.log('Announcement Added');
-        }
-    });
+			res.render('dashboard/announcement', {
+				user: {
+					name: author,
+					_id: authorId
+				},
+				formDetails: {
+					schedule: schedule,
+					title: title,
+					content: content
+				},
+				errors: errors.array()
+			});
+
+		} else {
+			var newAnnouncement = new Announcement( {
+					authorId: authorId,
+					author: author,
+					schedule: schedule,
+					title: title,
+					content: content
+			});
+	
+			newAnnouncement.save(function(err) {
+					if(err) {
+							console.log(err);
+							return;
+					} else {
+							res.redirect('/dashboard/announcement');
+							console.log('Announcement Added');
+					}
+			});
+		}
 });
 
 //Route: dashboard/aminities

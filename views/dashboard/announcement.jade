@@ -6,17 +6,33 @@ block content
     .container
       .col-md-8.mt-3 Announcement #{user._id}
           form(method='POST', action='/dashboard/announcement')
-              input(type='hidden', name='author' value='#{user.name}')
-              input(type='hidden', name='authorId' value='#{user._id}')
+            input(type='hidden', name='author' value='#{user.name}')
+            input(type='hidden', name='authorId' value='#{user._id}')
+
+            if formDetails
               .form-group
                   label(for='title') Title
-                  input.form-control(type='text', name="title")
+                  input.form-control(type='text', name='title', value='#{formDetails.title}', required='true')
               .form-group
                   label(for='content') Content
-                  textarea.form-control(rows='3', name="content")
+                  textarea.form-control(rows='3', name='content', required='true') #{formDetails.content}
               .form-group
                   label(for='schedule') Schedule
-                  input.form-control(type='datetime-local', name="schedule")
-              button.btn.btn-primary.mb-2(type='submit') Report
+                  input.form-control.schedule(type='datetime-local', name='schedule', value='#{formDetails.schedule}', required='true', min='now()')
+            else
+              .form-group
+                  label(for='title') Title
+                  input.form-control(type='text', name='title', required='true')
+              .form-group
+                  label(for='content') Content
+                  textarea.form-control(rows='3', name='content', required='true')
+              .form-group
+                  label(for='schedule') Schedule
+                  input.form-control.schedule(type='datetime-local', name='schedule', required='true', min='now()')
 
-         
+            if errors
+              p.text-danger.mt-3 #{errors[0].msg}
+            button.btn.btn-primary.mb-2(type='submit') Report
+            
+  script(src='/bower_components/jquery/dist/jquery.js')
+  script(src='/javascripts/announcement.js')
