@@ -1,8 +1,8 @@
 extends ../layouts/master
 
 block content
-  .row
-    .container-fluid
+  .container-fluid
+    .row
       .col-md-12
         if (incidents.length > 0)
           | Reports
@@ -27,4 +27,5 @@ block content
                 p.card-text.text-muted.small #{'in ' + announceDates[i]}
         else
           p.text-muted No announcements to show
-        
+
+ 
