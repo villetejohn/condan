@@ -23,6 +23,10 @@ router.post('/register', [
     return user.length == 0;
   }).withMessage('E-mail is already in use'),
   check('username').not().isEmpty().withMessage('Please enter your username'),
+  check('username').custom(async function(value) {
+    var username = await User.find({'username': value});
+    return username.length == 0;
+  }).withMessage('Username already in use'),
   check('password').not().isEmpty().withMessage('Please enter your password'),
   check('password2').not().isEmpty().custom(async (value, {req}) => {
     if (value!== req.body.password) {
