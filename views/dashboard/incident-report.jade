@@ -15,6 +15,10 @@ block content
 										span.badge.badge-secondary #{incident.status}
 									span.d-block #{incident.issue}
 									span.d-block.text-muted.pt-2 You reported this #{incidentDates[i]}
+					else
+						.media.text-muted.pt-3
+							p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray.text-center
+								strong.d-block.text-gray-dark Nothing to show
 
 			.col-md-4.mt-3
 				form(method='POST', action='/dashboard/incident-report')
@@ -31,10 +35,10 @@ block content
 					else
 						.form-group
 								label(for='issue') Issue
-								textarea#issue.form-control(rows='3', name="issue", required='true')
+								textarea#issue.form-control(rows='3', name="issue", required='true', placeholder='Send an issue here')
 						.form-group
 								label(for='location') Location
-								input#location.form-control(type='text', name="location", required='true')
+								input#location.form-control(type='text', name="location", required='true', placeholder='Location')
 
 					if errors
 						p.text-danger.mt-3 #{errors[0].msg}
