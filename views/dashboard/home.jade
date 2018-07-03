@@ -9,18 +9,18 @@ block content
         .my-3.p-3.bg-white.rounded.box-shadow
           h6.border-bottom.border-gray.pb-2.mb-0 Announcements
 
-          if announcements
+          if (announcements)
             each announcement, i in announcements
               .media.text-muted.pt-3
                 p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
                   strong.d-block.text-gray-dark #{announcement.title}
                   span.d-block #{announcement.content}
                   span.d-block.text-muted.pt-2 #{'in ' + announceDates[i]}
-          else 
-            .media.text-muted.pt-3
-              p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
-                strong.d-block.text-gray-dark No Announcements
+            else 
+              .media.text-muted.pt-3
+                p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
+                  strong.d-block.text-gray-dark No Announcements
 
-          small.d-block.text-right.mt-3
-            a(href='#') View all announcements
+              small.d-block.text-right.mt-3
+                a(href='#') View all announcements
         

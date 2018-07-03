@@ -18,7 +18,7 @@ block content
                   textarea.form-control(rows='3', name='content', required='true') #{formDetails.content}
               .form-group
                   label(for='schedule') Schedule
-                  input.form-control.schedule(type='datetime-local', name='schedule', value='#{formDetails.schedule}', required='true', min='now()')
+                  input.form-control.schedule(type='datetime-local', name='schedule', value='#{formDetails.schedule}', required='true')
             else
               .form-group
                   label(for='title') Title
@@ -34,5 +34,3 @@ block content
               p.text-danger.mt-3 #{errors[0].msg}
             button.btn.btn-primary.mb-2(type='submit') Report
             
-  script(src='/bower_components/jquery/dist/jquery.js')
-  script(src='/javascripts/announcement.js')
