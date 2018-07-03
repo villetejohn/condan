@@ -20,6 +20,16 @@ var BookedAmenitySchema = mongoose.Schema({
   scheduleEnd: {
     type: Date,
     required: true
+  },
+  status: {
+    type: String,
+    default: 'Pending',
+    required: true
+  },
+  created_at: {
+    type: Date,
+    default: Date.now,
+    required: true
   }
 
 });
