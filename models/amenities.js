@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var AmenitySchema = mongoose.Schema({
   amenities: {
     type: Array,
-    required: [String]
+    required: String
   },
 
 });
