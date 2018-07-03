@@ -11,7 +11,7 @@ var { check, validationResult } = require('express-validator/check');
 
 // Route: dashboard/
 // GET Request
-router.get('/', function(req, res, next) {
+router.get('/', ensureAuthenticated, function(req, res, next) {
     if (req.user){
         // req.session.sessionFlash = {
         //     type: 'success',
@@ -25,9 +25,8 @@ router.get('/', function(req, res, next) {
 
 // Route: dashboard/home
 // GET Request
-router.get('/home', function(req, res, next) {
+router.get('/home', ensureAuthenticated, function(req, res, next) {
     if (req.user) {
-
         //Load Announcements
         Announcement.find({}, null, {sort: 'schedule'}, function(err, announcements) {
             if(err) {
@@ -54,8 +53,6 @@ router.get('/home', function(req, res, next) {
                 });
             }
         });
-
-
     }
     else
         res.redirect('/');
@@ -63,7 +60,7 @@ router.get('/home', function(req, res, next) {
 
 // Route: dashboard/incident-report
 // GET Request
-router.get('/incident-report', function(req, res, next) {
+router.get('/incident-report', ensureAuthenticated, function(req, res, next) {
     // Load incidents reports created by user
     Incident.find({'authorId': req.user._id}, null, {sort: '-created_at'}, function(err, incidents) {
         if(err) {
@@ -140,7 +137,7 @@ router.post('/incident-report', [
 
 // Route: dashboard/view-reports
 // GET Request
-router.get('/view-reports', function(req, res, next) {
+router.get('/view-reports', ensureAuthenticated, function(req, res, next) {
     Incident.find({}, function(err, incidents) {
         if(err) {
             console.log(err);
@@ -183,13 +180,13 @@ router.post('/view-reports', function(req, res, next) {
 
 // Route: dashboard/generate-reports
 // 
-router.get('/generate-reports', function(req, res, next) {
+router.get('/generate-reports', ensureAuthenticated, function(req, res, next) {
     res.render('dashboard/generate-report');
 });
 
 // Route: dashbaord/announcements
 // GET Request
-router.get('/announcement', function(req, res) {
+router.get('/announcement', ensureAuthenticated, function(req, res) {
     res.render('dashboard/announcement');
 });
 
@@ -200,8 +197,15 @@ router.post('/announcement', [
 	check('content').not().isEmpty().withMessage('Please indicate content'),
 	check('schedule').not().isEmpty().withMessage('Please indicate schedule'),
 	check('schedule').custom(async function(value) {
+		var announceDate = moment(value);
+		// announcement sched - date now
+		var dateDiff = announceDate.diff(moment());
+		// dateDiff <= 0 ? false : '';
+		if (dateDiff <= 0) {
+			return false;
+		}
 
-	})
+	}).withMessage('The schedule is already passed')
 ], function(req, res, next) {
     const authorId = req.body.authorId;
     const author = req.body.author;
@@ -211,12 +215,6 @@ router.post('/announcement', [
 		
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
-			var formDetails = {
-				schedule: schedule,
-				title: title,
-				content: content};
-				console.log(formDetails);
-
 			res.render('dashboard/announcement', {
 				user: {
 					name: author,
@@ -253,41 +251,180 @@ router.post('/announcement', [
 
 //Route: dashboard/aminities
 // GET Request
-router.get('/amenities', function(req, res ,next) {
+router.get('/amenities', ensureAuthenticated, function(req, res ,next) {
     res.render('dashboard/amenities');
 });
 
 // Route: dashboard/booked-amenities
 // GET Request
-router.get('/booked-amenities', function(req, res, next) {
-    res.render('dashboard/book-amenities');
+router.get('/booked-amenities', ensureAuthenticated, function(req, res, next) {
+	var query, sort;
+	if (req.user.is_admin) {
+		query = {
+			status: 'Pending'
+		};
+	} else {
+		query = {
+			bookedById: req.user._id,
+			status: 'Pending'
+		};
+	}
+
+	BookedAmenity.find(query, null, {sort: '-created_at'}, function(err, bookedAmenities) {
+		if(err) {
+				console.log(err);
+		} else {
+				var bookedStartDates = bookedAmenities.map(function(bookedAmenity) {
+					return moment(bookedAmenity.scheduleStart);
+				});
+				var bookedEndDates = bookedAmenities.map(function(bookedAmenity) {
+					return moment(bookedAmenity.scheduleStart);
+				});
+
+				res.render('dashboard/book-amenities', {
+					bookedAmenities: bookedAmenities,
+					bookedStartDates: bookedStartDates,
+					bookedEndDates: bookedEndDates
+				});
+		}
+	});
 });
 
 // Route: dashboard/booked-amenities
 // POST Request
-router.post('/booked-amenities', function(req, res, next) {
-    const amenity = req.body.amenity;
-    const bookedById = req.body.bookedById;
-    const bookedByName = req.body.bookedByName;
-    const scheduleStart = req.body.scheduleStart;
-    const scheduleEnd = req.body.scheduleEnd;
+router.post('/booked-amenities', [
+	check('amenity').not().isEmpty().withMessage('Please select amenity'),
+	check('scheduleStart').not().isEmpty().withMessage('Please select schedule'),
+	check('scheduleEnd').not().isEmpty().withMessage('Please indicate your booking duration'),
+	check('scheduleStart').isISO8601().withMessage('Please enter a valid schedule'),
+	check('scheduleEnd').isISO8601().withMessage('Please enter a valid schedule'),
+	check('scheduleStart').custom(async function(value) {
+		var bookingSchedStart = moment(value);
+		var dateDiff = bookingSchedStart.diff(moment());
+		if (dateDiff <= 0) {
+			return false;
+		}
 
-    var newBookedAmenity = new BookedAmenity( {
-        amenity: amenity,
-        bookedById: bookedById,
-        bookedByName: bookedByName,
-        scheduleStart: scheduleStart,
-        scheduleEnd: scheduleEnd
-    });
+	}).withMessage('Please enter a valid schedule'),
+	check('scheduleEnd').custom(async function(value, {req}) {
+		var bookStartDate = moment(req.body.scheduleStart);
+		var bookEndDate = moment(value);
 
-    newBookedAmenity.save(function(err) {
-        if(err) {
-            console.log(err);
-        } else {
-            console.log('Amenity Booked');
-            res.redirect('/dashboard/booked-amenities');
-        }
-    });
+		var dateDiff = bookEndDate.diff(bookStartDate);
+		if (dateDiff <= 0) {
+			return false;
+		}
+
+	}).withMessage('Please select valid booking duration'),
+	check('scheduleEnd').custom(async function(value, {req}) {
+		var bookStartDate = moment(req.body.scheduleStart);
+		var bookEndDate = moment(value);
+
+		var dateDiff = bookEndDate.diff(bookStartDate);
+		// if booking duration is longer than 15mins or 900000ms
+		if (dateDiff < 900000) {
+			return false;
+		}
+
+	}).withMessage('Please select longer booking duration'),
+],function(req, res, next) {
+	const amenity = req.body.amenity;
+	const bookedById = req.body.bookedById;
+	const bookedByName = req.body.bookedByName;
+	const scheduleStart = req.body.scheduleStart;
+	const scheduleEnd = req.body.scheduleEnd;
+
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		var query;
+		if (req.user.is_admin) {
+			query = {
+				status: 'Pending'
+			};
+		} else {
+			query = {
+				bookedById: req.user._id,
+				status: 'Pending'
+			};
+		}
+		BookedAmenity.find(query, null, {sort: '-created_at'}, function(err, bookedAmenities) {
+			if(err) {
+					console.log(err);
+			} else {
+					var bookedStartDates = bookedAmenities.map(function(bookedAmenity) {
+						return moment(bookedAmenity.scheduleStart);
+					});
+					var bookedEndDates = bookedAmenities.map(function(bookedAmenity) {
+						return moment(bookedAmenity.scheduleStart);
+					});
+
+					res.render('dashboard/book-amenities', {
+						bookedAmenities: bookedAmenities,
+						bookedStartDates: bookedStartDates,
+						bookedEndDates: bookedEndDates,
+						user: {
+							name: bookedByName,
+							_id: bookedById
+						},
+						formDetails: {
+							amenity: amenity,
+							scheduleStart: scheduleStart,
+							scheduleEnd: scheduleEnd,
+						},
+						errors: errors.array()
+					});
+			}
+		});
+
+
+	} else {
+		var newBookedAmenity = new BookedAmenity( {
+				amenity: amenity,
+				bookedById: bookedById,
+				bookedByName: bookedByName,
+				scheduleStart: scheduleStart,
+				scheduleEnd: scheduleEnd
+		});
+
+		newBookedAmenity.save(function(err) {
+				if(err) {
+						console.log(err);
+				} else {
+						console.log('Amenity Booked');
+						res.redirect('/dashboard/booked-amenities');
+				}
+		});
+	}
 });
+
+// Route: dashboard/pending-bookings
+// GET Request
+router.get('/pending-bookings', ensureAuthenticated, function(req, res, next){
+	res.send('Pending Bookings');
+});
+
+// Route: /dashbaord/pending-bookings
+// POST Request
+router.post('/pending-bookings', function(req, res, next) {
+	if (req.user.is_admin) {
+		BookedAmenity.findByIdAndUpdate(req.body.bookingId, {$set: {status: 'Approved'}}, function(err, status) {
+			if(err) {
+				console.log(err);
+			} else {
+				res.redirect('/dashboard/booked-amenities');
+			}
+		});
+	}
+});
+
+// Check using Passport if authenticated
+function ensureAuthenticated(req, res, next) {
+	if(req.isAuthenticated()) {
+		return next();
+	} else {
+		res.redirect('/user/login');
+	}
+}
+
 
 module.exports = router;
