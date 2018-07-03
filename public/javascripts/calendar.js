@@ -4,16 +4,13 @@ $(function() {
         header: {
           left: 'prev,next today',
           center: 'title',
-          right: 'month,agendaWeek,agendaDay'
+          right: 'month,agendaWeek,agendaDay,listMonth'
         },
         selectable: true,
         eventLimit: true,
         events: results.bookingDetails
       });
   })
-
-
-
 
 });
 
