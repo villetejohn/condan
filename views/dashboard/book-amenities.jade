@@ -34,10 +34,10 @@ block content
                     option Gym
                 .form-group
                     label(for='scheduleStart') Schedule
-                    input.form-control(type='datetime-local', name="scheduleStart", value='#{formDetails.scheduleStart}', required='true')
+                    input.form-control(type='datetime-local', name="scheduleStart", value='#{formDetails.scheduleStart}', required='true', min='#{minDate}')
                 .form-group
                     label(for='scheduleEnd') Book Until
-                    input.form-control(type='datetime-local', name="scheduleEnd", value='#{formDetails.scheduleEnd}', required='true')
+                    input.form-control(type='datetime-local', name="scheduleEnd", value='#{formDetails.scheduleEnd}', required='true', min='#{minDate}')
               else 
                 .form-group
                   label(for='amenity') Choose Amenity
@@ -47,10 +47,10 @@ block content
                     option Gym
                 .form-group
                     label(for='scheduleStart') Schedule
-                    input.form-control(type='datetime-local', name="scheduleStart", required='true')
+                    input.form-control(type='datetime-local', name="scheduleStart", required='true', min='#{minDate}')
                 .form-group
                     label(for='scheduleEnd') Book Until
-                    input.form-control(type='datetime-local', name="scheduleEnd", required='true')
+                    input.form-control(type='datetime-local', name="scheduleEnd", required='true', min='#{minDate}')
               if errors
                 p.text-danger.mt-3 #{errors[0].msg}
 
