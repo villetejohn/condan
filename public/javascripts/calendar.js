@@ -1,5 +1,5 @@
 $(function() {
-  $.get('http://localhost:3000/api/booked-amenities', function(results) {
+  $.get('http://10.1.30.164:3000/api/booked-amenities', function(results) {
       $('#calendar').fullCalendar({
         header: {
           left: 'prev,next today',
