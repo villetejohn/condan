@@ -39,15 +39,20 @@ router.get('/home', ensureAuthenticated, function(req, res, next) {
                     } else {
                         var incidentDates = incidents.map(function(incident) {
                             return moment(incident.created_at).fromNow();
-                        });
-                        var announceDates = announcements.map(function(announcement) {
+												});
+												var announceDates = announcements.map(function(announcement) {
+													return moment(announcement.schedule).format("dddd, MMMM Do, h:mma");
+												});
+                        var announceDatesPretty = announcements.map(function(announcement) {
                             return moment(announcement.schedule).toNow(true);
-                        });
+												});
+												
                         res.render('dashboard/home', {
                             incidents: incidents,
                             incidentDates: incidentDates,
-                            announcements: announcements,
-                            announceDates: announceDates
+														announcements: announcements,
+														announceDates: announceDates,
+                            announceDatesPretty: announceDatesPretty
                         });
                     }
                 });
@@ -62,7 +67,7 @@ router.get('/home', ensureAuthenticated, function(req, res, next) {
 // GET Request
 router.get('/incident-report', ensureAuthenticated, function(req, res, next) {
     // Load incidents reports created by user
-    Incident.find({'authorId': req.user._id}, null, {sort: '-created_at'}, function(err, incidents) {
+    Incident.find({'authorId': req.user._id}, null, {sort: 'created_at'}, function(err, incidents) {
         if(err) {
             console.log(err);
         } else {
@@ -194,15 +199,27 @@ router.get('/announcement', ensureAuthenticated, function(req, res) {
 					console.log(err)
 				} else {
 					res.render('dashboard/announcement', {
-						editMode: true,
+						isEditMode: true,
 						formDetails: announcement,
-						isoDate: moment(announcement.schedule).toISOString(true)
+						isoDate: moment(announcement.schedule).format('YYYY-MM-DDTHH:mm'),
+						announceId: announcement._id
 					});
 				}
 			})
 		} else {
 			res.render('dashboard/announcement');
 		}
+});
+
+// Route: dashboard/announcements/edit/:id
+// GET Request
+router.get('/announcement/delete/:id', function(req, res) {
+	Announcement.remove({'_id': req.params.id}, function(err) {
+		if(err) {
+			console.log(err);
+		}
+	})
+	res.redirect('/dashboard/home');
 });
 
 // Route: dashboard/announcements
@@ -244,6 +261,23 @@ router.post('/announcement', [
 			});
 
 		} else {
+
+			if (req.body.isEditMode) {
+				Announcement.findByIdAndUpdate(req.body.announceId, {$set: {
+					schedule: schedule,
+					title: title,
+					content: content
+				}}, function(err, announcement) {
+					if(err) {
+						console.log(err);
+					} else {
+						res.redirect('/dashboard/home');
+					}
+
+				});
+				return;
+			}
+
 			var newAnnouncement = new Announcement( {
 					authorId: authorId,
 					author: author,
