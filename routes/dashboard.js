@@ -184,10 +184,25 @@ router.get('/generate-reports', ensureAuthenticated, function(req, res, next) {
     res.render('dashboard/generate-report');
 });
 
-// Route: dashbaord/announcements
+// Route: dashboard/announcements
 // GET Request
 router.get('/announcement', ensureAuthenticated, function(req, res) {
-    res.render('dashboard/announcement');
+		if (req.query.id) {
+			var annceId = req.query.id;
+			Announcement.findById(annceId, function(err, announcement) {
+				if(err) {
+					console.log(err)
+				} else {
+					res.render('dashboard/announcement', {
+						editMode: true,
+						formDetails: announcement,
+						isoDate: moment(announcement.schedule).toISOString(true)
+					});
+				}
+			})
+		} else {
+			res.render('dashboard/announcement');
+		}
 });
 
 // Route: dashboard/announcements
@@ -205,7 +220,7 @@ router.post('/announcement', [
 			return false;
 		}
 
-	}).withMessage('The schedule is already passed')
+	}).withMessage('Please enter a valid schedule')
 ], function(req, res, next) {
     const authorId = req.body.authorId;
     const author = req.body.author;
