@@ -1,26 +1,33 @@
 extends ../layouts/master
 
 block styles
-  link(rel='stylesheet', href='/stylesheets/home.css')
+  //- link(rel='stylesheet', href='/stylesheets/home.css')
+  link(rel='stylesheet', href='/stylesheets/dashboard.css')
 block content
-  .container
+  .container-fluid
     .row
-      .col-md-12
-        .my-3.p-3.bg-white.rounded.box-shadow
-          h6.border-bottom.border-gray.pb-2.mb-0 Announcements
+      main.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4(role='main')
+            .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pb-2.mb-3.border-bottom
+              h1.h3 Dashboard
+            .my-3.bg-white.rounded.box-shadow
+              if (announcements)
+                each announcement, i in announcements
+                  .media.text-muted.pt-3
+                    p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
+                      strong.d-block.text-gray-dark #{announcement.title}
+                      span.d-block #{announcement.content}
+                      span.d-block.text-muted.pt-2 #{'in ' + announceDates[i]}
+                    if user.is_admin
+                      form(method='GET', action='/dashboard/announcement')
+                        input(type='hidden', name='id' value='#{announcement._id}')
+                        button(type='submit').small edit
 
-          if (announcements)
-            each announcement, i in announcements
-              .media.text-muted.pt-3
-                p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
-                  strong.d-block.text-gray-dark #{announcement.title}
-                  span.d-block #{announcement.content}
-                  span.d-block.text-muted.pt-2 #{'in ' + announceDates[i]}
-            else 
-              .media.text-muted.pt-3
-                p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
-                  strong.d-block.text-gray-dark No Announcements
+                else 
+                  .media.text-muted.pt-3
+                    p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
+                      strong.d-block.text-gray-dark No Announcements
+                  //- small.d-block.text-right.mt-3
+                  //-   a(href='#') View all announcements
 
-              small.d-block.text-right.mt-3
-                a(href='#') View all announcements
+
         
