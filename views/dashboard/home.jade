@@ -12,11 +12,12 @@ block content
             .my-3.bg-white.rounded.box-shadow
               if (announcements)
                 each announcement, i in announcements
-                  .media.text-muted.pt-3
+                  .media.pt-3
                     p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
                       strong.d-block.text-gray-dark #{announcement.title}
-                      span.d-block #{announcement.content}
-                      span.d-block.text-muted.pt-2 #{'in ' + announceDates[i]}
+                      span.d-block.text-muted #{announcement.content}
+                      span.d-block.text-muted #{announceDates[i]}
+                      span.d-block.text-muted.pt-2 #{'in ' + announceDatesPretty[i]}
                     if user.is_admin
                       form(method='GET', action='/dashboard/announcement')
                         input(type='hidden', name='id' value='#{announcement._id}')
