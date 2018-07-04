@@ -20,26 +20,26 @@ block content
             if formDetails
               .form-group
                   label(for='title') Title
-                  input.form-control(type='text', name='title', value='#{formDetails.title}', required='true')
+                  input.form-control(type='text', name='title', value='#{formDetails.title}', required='true', maxlength='160')
               .form-group
                   label(for='content') Details
-                  textarea.form-control(rows='3', name='content', required='true') #{formDetails.content}
+                  textarea.form-control(rows='3', name='content', required='true', maxlength='2200') #{formDetails.content}
               .form-group
                   label(for='schedule') Schedule
                   if isoDate
                     input.form-control.schedule(type='datetime-local', name='schedule', value='#{isoDate}', required='true')
                   else
-                    input.form-control.schedule(type='datetime-local', name='schedule', value='#{formDetails.schedule}', required='true')
+                    input.form-control.schedule(type='datetime-local', name='schedule', value='#{formDetails.schedule}', required='true', min='#{minDate}')
             else
               .form-group
                   label(for='title') Title
-                  input.form-control(type='text', name='title', required='true')
+                  input.form-control(type='text', name='title', required='true', maxlength='160')
               .form-group
                   label(for='content') Details
-                  textarea.form-control(rows='3', name='content', required='true')
+                  textarea.form-control(rows='3', name='content', required='true', maxlength='2200')
               .form-group
                   label(for='schedule') Schedule
-                  input.form-control.schedule(type='datetime-local', name='schedule', required='true')
+                  input.form-control.schedule(type='datetime-local', name='schedule', required='true', min='#{minDate}')
             if errors
               p.text-danger.mt-3 #{errors[0].msg}
             button.btn.btn-primary.mb-2(type='submit')
