@@ -9,29 +9,89 @@ html
 
   body
     block nav
-      nav.navbar.navbar-expand-lg.navbar-light.bg-light
-          a.navbar-brand(href='#') Condan
-          button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarNav')
-            span.navbar-toggler-icon
-          #navbarNav.collapse.navbar-collapse
-            ul.navbar-nav.nav-right
-              if user
-                li.nav-item.active
-                  a.nav-link(href='/dashboard/home') Home
-                li.nav-item
-                  a.nav-link(href='/dashboard/incident-report') Indicent Reports
-                li.nav-item
-                  a.nav-link(href='/dashboard/announcement') Announcements
-                li.nav-item
-                  a.nav-link(href='/dashboard/booked-amenities') Book Amenities
-                li.nav-item
-                  a.nav-link(href='/user/logout') Logout
-                if user.is_admin
-                  li.nav-item
-                    a.nav-link(href='/dashboard/view-reports') View Reports
-                  li.nav-item
-                    a.nav-link(href='/dashboard/generate-reports') Generate Reports
+      if user
+        nav.navbar.navbar-dark.sticky-top.bg-dark.flex-md-nowrap.p-0
+          a.navbar-brand.col-sm-3.col-md-2.mr-0(href='#') Hi, #{user.name}
+          input#incidents-table-filter.form-control.form-control-dark.w-100(type='text', placeholder='Search', aria-label='Search')
+          ul.navbar-nav.px-3
+            li.nav-item.text-nowrap
+              a.nav-link(href='/user/logout') Sign out
 
+    block sideNav
+      if user
+        nav.col-md-2.d-none.d-md-block.bg-light.sidebar
+          .sidebar-sticky
+            ul.nav.flex-column.sidebar-nav
+              li.nav-item
+                a.nav-link.active(href='/dashboard/home')
+                  span
+                  if user.is_admin
+                    | Home 
+                  else
+                    | Announcements
+
+              if user.is_admin
+                li.nav-item
+                  a.nav-link(href='/dashboard/announcement')
+                    span
+                    | Announcement 
+              li.nav-item
+                a.nav-link(href='#')
+                  span
+                  | Event
+              li.nav-item
+                a.nav-link(href='/dashboard/incident-report')
+                  span
+                  | Send Incident Report
+              li.nav-item
+                a.nav-link(href='/dashboard/booked-amenities')
+                  span
+                  | Book Amenity
+              li.nav-item
+                a.nav-link(href='/dashboard/accounts')
+                  span
+                  | Accounts
+              if user.is_admin
+                li.nav-item
+                  a.nav-link(href='view-reports')
+                    span
+                    | Reports
+            h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
+              span Generate reports
+              a.d-flex.align-items-center.text-muted(href='#')
+                span
+            ul.nav.flex-column.mb-2
+              li.nav-item
+                a.nav-link(href='#')
+                  span
+                  | Current month
+      //- if user
+      //-   nav.navbar.navbar-expand-lg.navbar-light.bg-light
+      //-       a.navbar-brand(href='#') Condan
+      //-       button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarNav')
+      //-         span.navbar-toggler-icon
+      //-       #navbarNav.collapse.navbar-collapse
+      //-         ul.navbar-nav.nav-right
+      //-             li.nav-item.active
+      //-               a.nav-link(href='/dashboard/home') Home
+      //-             li.nav-item
+      //-               a.nav-link(href='/dashboard/incident-report') Send Report
+      //-             li.nav-item
+      //-               a.nav-link(href='/dashboard/booked-amenities') Book Amenities
+      //-             li.nav-item
+      //-               a.nav-link(href='/user/logout') Logout
+      //-             if user.is_admin
+      //-               li.nav-item
+      //-                 a.nav-link(href='/dashboard/announcement') Announcements
+      //-               li.nav-item
+      //-                 a.nav-link(href='/dashboard/view-reports') View Reports
+      //-               li.nav-item
+      //-                 a.nav-link(href='/dashboard/generate-reports') Generate Reports
+      //-               li.nav-item
+      //-                 a.nav-link(href='/dashboard/pending-bookings') Pending Bookings              
     block content
+
+
+
   
   

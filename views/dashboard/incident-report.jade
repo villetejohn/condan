@@ -1,19 +1,49 @@
 extends ../layouts/master
 
+block styles
+  link(rel='stylesheet', href='/stylesheets/dashboard.css')
+
 block content
-
-  .row
-    .container
-      .col-md-8.mt-3
-          form(method='POST', action='/dashboard/incident-report')
-              input(type='hidden', name='author' value='#{user.name}')
-              input(type='hidden', name='authorId' value='#{user._id}')
-              .form-group
-                  label(for='issue') Issue #{user._id}
-                  textarea#issue.form-control(rows='3', name="issue")
-              .form-group
+  .container-fluid
+    .row
+      main.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4(role='main')
+        .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pb-2.mb-3.border-bottom
+          h1.h4 Incident Report
+        .row
+          .col-md-8
+            .mb-3.bg-white.rounded.box-shadow
+              if incidents.length > 0
+                each incident, i in incidents
+                  .media.text-muted.pt-3
+                    p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
+                      strong.d-block.text-gray-dark #{incident.location}
+                        span.badge.badge-secondary #{incident.status}
+                      span.d-block #{incident.issue}
+                      span.d-block.text-muted.pt-2 You reported this #{incidentDates[i]}
+              else
+                .media.text-muted.pt-3
+                  p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray.text-center
+                    strong.d-block.text-gray-dark Nothing to show
+          .col-md-4
+            form(method='POST', action='/dashboard/incident-report')
+              input(type='hidden', name='author' value='#{user.name}', required='true')
+              input(type='hidden', name='authorId' value='#{user._id}', required='true')
+            
+              if formDetails
+                .form-group
+                  label(for='issue') Issue
+                  textarea#issue.form-control(rows='3', name="issue", required='true') #{formDetails.issue}
+                .form-group
                   label(for='location') Location
-                  input#location.form-control(type='text', name="location")
-              button.btn.btn-primary.mb-2(type='submit') Report
+                  input#location.form-control(type='text', name="location", required='true', value='#{formDetails.location}')
+              else
+                .form-group
+                  label(for='issue') Issue
+                  textarea#issue.form-control(rows='3', name="issue", required='true', placeholder='Send an issue here')
+                .form-group
+                  label(for='location') Location
+                  input#location.form-control(type='text', name="location", required='true', placeholder='Location')
 
-         
+              if errors
+                p.text-danger.mt-3 #{errors[0].msg}
+              button.btn.btn-primary.mb-2(type='submit') Report

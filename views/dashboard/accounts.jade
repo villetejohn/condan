@@ -1,0 +1,75 @@
+extends ../layouts/master
+
+block styles
+  link(rel='stylesheet', href='/stylesheets/dashboard.css')
+
+block content
+  .container-fluid
+    .row
+      main.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4(role='main')
+        table.incident-reports-table.table.table-hover
+            thead
+                tr
+                  th Name
+                  th Email
+                  th Username
+                  th Validated
+                  th
+            tbody#users-table-body
+                each user, i in users
+                  tr
+                    td #{user.name}
+                    td #{user.email}
+                    td #{user.username}
+                    td #{user.is_validated}
+                    td 
+                      button.btn.btn-primary.btn-sm(type='button', data-toggle='modal', data-target='#modal-#{i}')
+                        | Edit
+                      if !(user.is_validated)
+                        a.btn.btn-outline-primary.btn-sm(href='/dashboard/accounts/activate/#{user._id}')
+                          | Activate
+
+        //- each incident, i in incidents               
+        //-   .modal.fade(tabindex='-1', role='dialog', id='modal-#{i}')
+        //-     .modal-dialog.modal-dialog-centered(role='document')
+        //-       .modal-content
+        //-         .modal-header
+        //-           h5#exampleModalLabel.modal-title #{incident.author}
+        //-             if incident.status == 'Pending'
+        //-               <span class="badge badge-secondary">#{incident.status}</span>
+        //-             else if incident.status == 'Reviewed'
+        //-               <span class="badge badge-info">#{incident.status}</span>
+        //-             else if incident.status == 'Taking Action'
+        //-               <span class="badge badge-warning">#{incident.status}</span>
+        //-             else if incident.status == 'Warning'
+        //-               <span class="badge badge-primary">#{incident.status}</span>
+        //-           button.close(type='button', data-dismiss='modal')
+        //-             span ×
+        //-         .modal-body
+        //-             div
+        //-               .text-muted Location:
+        //-               | #{incident.location}
+        //-               .text-muted.mt-3 Issue:
+        //-               | #{incident.issue}
+        //-         .modal-footer
+        //-           form(method='POST', action='/dashboard/view-reports')
+        //-             input.form-control(type='hidden', name='incidentId', value='#{incident._id}')
+        //-             input.form-control(type='hidden', name='status', value='#{incident.status}')
+        //-             if incident.status != 'Resolved'
+        //-               button.btn.btn-success(type='submit') 
+        //-                 if incident.status == 'Pending'
+        //-                   | Mark as Reviewed
+        //-                 else if incident.status == 'Reviewed'
+        //-                   | Mark as Taking Action
+        //-                 else if incident.status == 'Taking Action'
+        //-                   | Mark as Resolved
+        //-             else 
+        //-               p.text-muted
+        //-               | This issue is already resolved</p>
+                      
+
+  script(src='/bower_components/jquery/dist/jquery.js')
+  script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js')
+  script(src='/javascripts/tablefilter.js')
+  script(src='/javascripts/tablemodal.js')
+

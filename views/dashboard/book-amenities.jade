@@ -3,6 +3,7 @@ extends ../layouts/master
 block styles 
   link(rel='stylesheet', href='/stylesheets/fullcalendar.css')
   link(rel='stylesheet', href='/stylesheets/calendar.css')
+  link(rel='stylesheet', href='/stylesheets/dashboard.css')
 
 block scripts
   script(src='/javascripts/moment.js')
@@ -11,25 +12,71 @@ block scripts
   script(src='/javascripts/calendar.js')
 
 block content
-  .container
-    .row.mt-3
-      .col-md-8
-        #calendar
-      .col-md-4
-        form(method='POST', action='/dashboard/booked-amenities')
-          input(type='hidden', name='bookedById' value='#{user._id}')
-          input(type='hidden', name='bookedByName' value='#{user.name}')
-          .form-group
-            label(for='amenity') Choose Amenity
-            select#amenity.form-control(name="amenity")
-              option Pool
-              option Karaoke Room
-              option Gym
-          .form-group
-              label(for='scheduleStart') Schedule
-              input.form-control(type='datetime-local', name="scheduleStart")
-          .form-group
-              label(for='scheduleEnd') Book Until
-              input.form-control(type='datetime-local', name="scheduleEnd")
-          button.btn.btn-primary.mb-2(type='submit') Book
+  .container-fluid
+    .row
+      main.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4(role='main')
+        .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pb-2.mb-3.border-bottom
+          h1.h4 Book Amenity
+        .row
+          .col-md-8
+            #calendar
+          .col-md-4
+            form(method='POST', action='/dashboard/booked-amenities')
+              input(type='hidden', name='bookedById' value='#{user._id}', required='true')
+              input(type='hidden', name='bookedByName' value='#{user.name}', required='true')
 
+              if formDetails
+                .form-group
+                  label(for='amenity') Choose Amenity
+                  select#amenity.form-control(name="amenity", required='true')
+                    option Pool
+                    option Karaoke Room
+                    option Gym
+                .form-group
+                    label(for='scheduleStart') Schedule
+                    input.form-control(type='datetime-local', name="scheduleStart", value='#{formDetails.scheduleStart}', required='true', min='#{minDate}')
+                .form-group
+                    label(for='scheduleEnd') Book Until
+                    input.form-control(type='datetime-local', name="scheduleEnd", value='#{formDetails.scheduleEnd}', required='true', min='#{minDate}')
+              else 
+                .form-group
+                  label(for='amenity') Choose Amenity
+                  select#amenity.form-control(name="amenity", required='true')
+                    option Pool
+                    option Karaoke Room
+                    option Gym
+                .form-group
+                    label(for='scheduleStart') Schedule
+                    input.form-control(type='datetime-local', name="scheduleStart", required='true', min='#{minDate}')
+                .form-group
+                    label(for='scheduleEnd') Book Until
+                    input.form-control(type='datetime-local', name="scheduleEnd", required='true', min='#{minDate}')
+              if errors
+                p.text-danger.mt-3 #{errors[0].msg}
+
+              button.btn.btn-primary.mb-2(type='submit') Book
+          
+            .my-3.bg-white.rounded.box-shadow
+              h6.border-bottom.border-gray.pb-2.mb-0 Pending Bookings
+
+              if bookedAmenities.length > 0
+                each bookedAmenity,i  in bookedAmenities
+                  .media.text-muted.pt-3
+                    .media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
+                      .d-flex
+                        strong.text-gray-dark #{bookedAmenity.amenity}
+                        span.align-self-center.badge.badge-secondary Pending
+                        if user.is_admin
+                          form.ml-auto(method='POST', action='/dashboard/pending-bookings')
+                            input(type='hidden', name='bookingId' value='#{bookedAmenity._id}', required='true')
+                            button(type='submit') Approve
+                      
+                      if user.is_admin 
+                        .text-muted
+                          | Booked by #{bookedAmenity.bookedByName}
+                      .text-muted
+                        | #{bookedStartDates[i]}
+              else
+                .media.text-muted.pt-3.text-center
+                  .media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
+                    span.text-gray-dark No Pending Bookings

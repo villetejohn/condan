@@ -1,22 +1,55 @@
 extends ../layouts/master
 
-block content
+block styles
+  link(rel='stylesheet', href='/stylesheets/dashboard.css')
 
-  .row
-    .container
-      .col-md-8.mt-3 Announcement #{user._id}
+block content
+  .container-fluid
+    .row
+      main.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4(role='main')
+        .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pb-2.mb-3.border-bottom
+          h1.h4 Announcement
+        .col-md-6.px-0
           form(method='POST', action='/dashboard/announcement')
-              input(type='hidden', name='author' value='#{user.name}')
-              input(type='hidden', name='authorId' value='#{user._id}')
+            input(type='hidden', name='author' value='#{user.name}')
+            input(type='hidden', name='authorId' value='#{user._id}')
+            if isEditMode
+              input(type='hidden', name='announceId' value='#{announceId}')
+              input(type='hidden', name='isEditMode' value='true')
+
+            if formDetails
               .form-group
                   label(for='title') Title
-                  input.form-control(type='text', name="title")
+                  input.form-control(type='text', name='title', value='#{formDetails.title}', required='true', maxlength='160')
               .form-group
-                  label(for='content') Content
-                  textarea.form-control(rows='3', name="content")
+                  label(for='content') Details
+                  textarea.form-control(rows='3', name='content', required='true', maxlength='2200') #{formDetails.content}
               .form-group
                   label(for='schedule') Schedule
-                  input.form-control(type='datetime-local', name="schedule")
-              button.btn.btn-primary.mb-2(type='submit') Report
+                  if isoDate
+                    input.form-control.schedule(type='datetime-local', name='schedule', value='#{isoDate}', required='true')
+                  else
+                    input.form-control.schedule(type='datetime-local', name='schedule', value='#{formDetails.schedule}', required='true', min='#{minDate}')
+            else
+              .form-group
+                  label(for='title') Title
+                  input.form-control(type='text', name='title', required='true', maxlength='160')
+              .form-group
+                  label(for='content') Details
+                  textarea.form-control(rows='3', name='content', required='true', maxlength='2200')
+              .form-group
+                  label(for='schedule') Schedule
+                  input.form-control.schedule(type='datetime-local', name='schedule', required='true', min='#{minDate}')
+            if errors
+              p.text-danger.mt-3 #{errors[0].msg}
+            button.btn.btn-primary.mb-2(type='submit')
+              if isEditMode
+                | Update
+              else 
+                | Report
+            if isEditMode
+              a.btn.btn-danger.mb-2(href='/dashboard/announcement/delete/#{announceId}') Delete
 
-         
+
+  script(src='/bower_components/jquery/dist/jquery.js') 
+  script(src='/javascripts/routes.js')
