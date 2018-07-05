@@ -34,6 +34,11 @@ var UserSchema = mongoose.Schema({
         type: Boolean,
         default: false,
         required: true
+    },
+    created_at: {
+        type: Date,
+        default: Date.now,
+        required: true
     }
 });
 
