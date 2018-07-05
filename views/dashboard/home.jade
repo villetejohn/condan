@@ -10,6 +10,10 @@ block content
             .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pb-2.mb-3.border-bottom
               h1.h3 Dashboard
             .my-3.bg-white.rounded.box-shadow
+              if messages
+                each message in messages
+                  p.text-success.mt-3 #{message}
+ 
               if (announcements)
                 each announcement, i in announcements
                   .media.pt-3
@@ -25,7 +29,7 @@ block content
 
                 else 
                   .media.text-muted.pt-3
-                    p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray
+                    p.media-body.pb-3.mb-0.small.lh-125.border-bottom.border-gray.text-center
                       strong.d-block.text-gray-dark No Announcements
                   //- small.d-block.text-right.mt-3
                   //-   a(href='#') View all announcements
