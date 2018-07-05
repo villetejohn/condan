@@ -9,7 +9,7 @@ module.exports = function(passport) {
         },
         function(username, password, done) {
             //Match Username
-            User.findOne({username: username}, function(err, user) {
+            User.findOne({username: username, is_validated: true}, function(err, user) {
                 if (err) throw err;
                 if (!user) {
                     return done(null, false, { message: 'Username and password did not match' });
