@@ -1,11 +1,25 @@
 extends ../layouts/master
 
+block styles
+  link(rel='stylesheet', href='/stylesheets/dashboard.css')
+
 block content
-	.row
-		.container
-			.col-md-12 Generating Reports
+  .container-fluid
+    .row
+      main.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4(role='main')
+        .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pb-2.mb-3.border-bottom
+          h1.h4 Generate Incident Report
+        .col-md-6.px-0
 
+          form
+            .form-group
+              label(for='title') Incident Status
+              select.form-control(required='true', name='type')
+                option Open
+                option Closed
 
-	script(src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js', integrity='sha384-THVO/sM0mFD9h7dfSndI6TS0PgAGavwKvB5hAxRRvc0o9cPLohB0wb/PTA7LdUHs', crossorigin='anonymous')
-	script(src='/bower_components/jquery/dist/jquery.js')
-	script(src='/javascripts/generatereport.js')
+            a.btn.btn-primary.mb-2(href='#')
+                | Generate
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.debug.js', integrity='sha384-THVO/sM0mFD9h7dfSndI6TS0PgAGavwKvB5hAxRRvc0o9cPLohB0wb/PTA7LdUHs', crossorigin='anonymous')
+  script(src='/bower_components/jquery/dist/jquery.js')
+  script(src='/javascripts/generatereport.js')
