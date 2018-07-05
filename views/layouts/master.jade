@@ -36,10 +36,6 @@ html
                     span
                     | Announcement 
               li.nav-item
-                a.nav-link(href='#')
-                  span
-                  | Event
-              li.nav-item
                 a.nav-link(href='/dashboard/incident-report')
                   span
                   | Send Incident Report
@@ -47,25 +43,30 @@ html
                 a.nav-link(href='/dashboard/booked-amenities')
                   span
                   | Book Amenity
-              li.nav-item
-                a.nav-link(href='/dashboard/accounts')
-                  span
-                  | Accounts
               if user.is_admin
+                li.nav-item
+                  a.nav-link(href='/dashboard/accounts')
+                    span
+                    | Accounts
                 li.nav-item
                   a.nav-link(href='view-reports')
                     span
                     | Reports
-            h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
-              span Generate reports
-              a.d-flex.align-items-center.text-muted(href='#')
-                span
-            ul.nav.flex-column.mb-2
-              li.nav-item
-                a.nav-link(href='#')
+            if user.is_admin       
+              h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
+                span Generate reports
+                a.d-flex.align-items-center.text-muted(href='#')
                   span
-                  | Current month
-      //- if user
+              ul.nav.flex-column.mb-2
+                li.nav-item
+                  a.nav-link(href='/dashboard/generate-report')
+                    span
+                    | Incident Report
+      //-         li.nav-item
+      //-           a.nav-link(href='#')
+      //-             span
+      //-             | Summary Report
+      //- //- if user
       //-   nav.navbar.navbar-expand-lg.navbar-light.bg-light
       //-       a.navbar-brand(href='#') Condan
       //-       button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarNav')
