@@ -85,8 +85,10 @@ router.get('/incident-report', ensureAuthenticated, function(req, res, next) {
 // Route: dashboard/incident-report
 // POST Request
 router.post('/incident-report', [
-	check('issue').not().isEmpty().withMessage('Please indicate the issue'),
-	check('location').not().isEmpty().withMessage('Please indicate the location')
+  check('issue').not().isEmpty().withMessage('Please indicate the issue'),
+  check('issue').isLength({max: 500}).withMessage('Issue can only be 500 characters'),
+  check('location').not().isEmpty().withMessage('Please indicate the location'),
+  check('location').isLength({max: 160}).withMessage('Location can only be 160 characters'),
 ], function(req, res, next) {
 	const authorId = req.body.authorId;
 	const author = req.body.author;
@@ -127,11 +129,11 @@ router.post('/incident-report', [
 
 		newIncident.save(function(err) {
 				if(err) {
-						console.log(err);
-						return;
+					console.log(err);
+					return;
 				} else {
-						
-						res.redirect('/dashboard/incident-report');
+          req.flash('success', 'Incident Reported');
+					res.redirect('/dashboard/incident-report');
 				}
 		});
 		
@@ -142,12 +144,16 @@ router.post('/incident-report', [
 // Route: dashboard/view-reports
 // GET Request
 router.get('/view-reports', ensureAuthenticated, function(req, res, next) {
-    Incident.find({}, function(err, incidents) {
+    Incident.find({}, null, {sort: '-created_at'}, function(err, incidents) {
         if(err) {
             console.log(err);
         } else {
+            var incidentDates = incidents.map(function(incident) {
+              return moment(incident.created_at).format("dddd, MMMM Do, h:mma");
+            });
             res.render('dashboard/view-report', {
                 incidents: incidents,
+                incidentDates: incidentDates
             });
         }   
     });
@@ -184,7 +190,7 @@ router.post('/view-reports', function(req, res, next) {
 
 // Route: dashboard/generate-reports
 // 
-router.get('/generate-reports', ensureAuthenticated, function(req, res, next) {
+router.get('/generate-report', ensureAuthenticated, function(req, res, next) {
     res.render('dashboard/generate-report');
 });
 
@@ -276,6 +282,7 @@ router.post('/announcement', [
 					if(err) {
 						console.log(err);
 					} else {
+            req.flash('success', 'Successfully updated announcement!');
 						res.redirect('/dashboard/home');
 					}
 
@@ -296,6 +303,7 @@ router.post('/announcement', [
 							console.log(err);
 							return;
 					} else {
+              req.flash('success', 'Successfully created announcement!');
 							res.redirect('/dashboard/announcement');
 							console.log('Announcement Added');
 					}
@@ -329,7 +337,7 @@ router.get('/booked-amenities', ensureAuthenticated, function(req, res, next) {
 				console.log(err);
 		} else {
 				var bookedStartDates = bookedAmenities.map(function(bookedAmenity) {
-					return moment(bookedAmenity.scheduleStart);
+					return moment(bookedAmenity.scheduleStart).format("dddd, MMMM Do, h:mma");
 				});
 				var bookedEndDates = bookedAmenities.map(function(bookedAmenity) {
 					return moment(bookedAmenity.scheduleStart);
@@ -457,20 +465,24 @@ router.post('/booked-amenities', [
 // Route: dashboard/accounts
 // GET Request
 router.get('/accounts', ensureAuthenticated, function(req, res, next) {
-	User.find({}, function(err, users) {
-		if (err) {
-			console.log(err);
-		} else {
-			res.render('dashboard/accounts', {
-				users: users
-			});
-		}
-	});
+  if (req.user.is_admin) {
+    User.find({}, null, {sort: '-created_at'}, function(err, users) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render('dashboard/accounts', {
+          users: users
+        });
+      }
+    });
+  } else {
+    res.redirect('/dashboard/home');
+  }
 });
 
 // Route: dashboard/accounts/activate/:id
 // GET Request
-router.get('/accounts/activate/:id', function(req, res, next) {
+router.get('/accounts/activate/:id', ensureAuthenticated, function(req, res, next) {
 	if (req.user.is_admin) {
 		User.findByIdAndUpdate(req.params.id, {$set: {is_validated: 'true'}}, function(err, status) {
 			if(err) {
@@ -484,6 +496,30 @@ router.get('/accounts/activate/:id', function(req, res, next) {
 	}
 });
 
+// Route: dashboard/accounts/deactivate/:id
+// GET Request
+router.get('/accounts/deactivate/:id', ensureAuthenticated, function(req, res, next) {
+	if (req.user.is_admin) {
+		User.findByIdAndUpdate(req.params.id, {$set: {is_validated: 'false'}}, function(err, status) {
+			if(err) {
+				console.log(err);
+			} else {
+				res.redirect('/dashboard/accounts');
+			}
+		});
+	} else {
+		res.redirect('/dashboard/home');
+	}
+});
+
+
+
+
+// Route: dashboard/accounts/add
+// GET Request
+router.get('/accounts/add', function(req, res, next) {
+	res.render('accounts/add');
+});
 
 // Route: dashboard/pending-bookings
 // GET Request

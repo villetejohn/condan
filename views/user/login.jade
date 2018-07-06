@@ -3,6 +3,10 @@ extends ../layouts/master
 block styles
   link(rel='stylesheet', href='/stylesheets/user/login.css')
 
+block nav
+
+block sideNav
+
 block content
   .container
     .row.text-center
@@ -24,3 +28,6 @@ block content
         if messages
           each message in messages
             p.text-danger.mt-3 #{message}
+
+
+

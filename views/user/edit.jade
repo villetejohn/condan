@@ -9,8 +9,9 @@ block sideNav
 block content
   .container
     .row.text-center
-      form.form-signin(method='POST', action='/user/register')
-        h1.h3.mb-3.font-weight-normal Register
+      form.form-signin(method='POST', action='/user/edit')
+        input(type='hidden', value='#{formDetails._id}', required='true', name='_id')
+        h1.h3.mb-3.font-weight-normal Update Accounts
         if formDetails 
           label.sr-only(for='name') Name
           input.form-control(type='text', placeholder='Name', required='true', name="name", value='#{formDetails.name}')
@@ -28,13 +29,6 @@ block content
 
           label.sr-only(for='username') Username
           input.form-control(type='text', placeholder='Username', required='true', name="username", value='#{formDetails.username}')
-
-          if !(user)
-            label.sr-only(for='userPassword') Password
-            input.form-control(type='password', placeholder='Password', required='true', name="password")
-
-            label.sr-only(for='password2') Re-type Password
-            input.form-control(type='password', placeholder='Re-type Password', required='true', name="password2")
 
         else 
           label.sr-only(for='name') Name
@@ -54,29 +48,27 @@ block content
           label.sr-only(for='username') Username
           input.form-control(type='text', placeholder='Username', required='true', autofocus='', name="username")
 
-          label.sr-only(for='userPassword') Password
-          input.form-control(type='password', placeholder='Password', required='true', name="password")
-
-          label.sr-only(for='password2') Re-type Password
-          input.form-control(type='password', placeholder='Re-type Password', required='true', name="password2")
-          
-          //- label.sr-only(for='userType') User Type
-          //- select.form-control(required='true', autofocus='', name='userType')
-          //-   option(value='1') User
-          //-   option(value='2') Admin
+          label.sr-only(for='userType') User Type
+          select.form-control(required='true', autofocus='', name='userType')
+            option User
+            option Admin
         
-        if !(user)
-          div.mb-3.mt-2
-            a(href='/user/login') Login
-        else
-          div.mb-3.mt-2
-            a(href='/dashboard/home') Go back to dashboard
+        
+        div.mb-3.mt-2
+          a(href='/dashboard/home') Go back to dashboard
             
-        button.btn.btn-md.btn-primary.btn-block(type='submit') Submit         
+        button.btn.btn-md.btn-primary.btn-block(type='submit') Update  
+        if formDetails
+          if !(formDetails.is_validated)
+            a.btn.btn-md.btn-outline-primary.btn-block(href='/dashboard/accounts/activate/#{formDetails._id}')
+              | Activate
+          else 
+            a.btn.btn-md.btn-outline-primary.btn-block(href='/dashboard/accounts/deactivate/#{formDetails._id}')
+              | Deactivate
+           
         //- p.mt-5.mb-3.text-muted &copy; 2017-2018
 
         if errors
             p.text-danger.mt-3 #{errors[0].msg}
-
 
 

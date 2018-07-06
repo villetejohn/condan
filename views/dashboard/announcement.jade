@@ -42,6 +42,11 @@ block content
                   input.form-control.schedule(type='datetime-local', name='schedule', required='true', min='#{minDate}')
             if errors
               p.text-danger.mt-3 #{errors[0].msg}
+              
+            if messages
+              each message in messages
+                p.text-success.mt-3 #{message}
+ 
             button.btn.btn-primary.mb-2(type='submit')
               if isEditMode
                 | Update
@@ -50,6 +55,3 @@ block content
             if isEditMode
               a.btn.btn-danger.mb-2(href='/dashboard/announcement/delete/#{announceId}') Delete
 
-
-  script(src='/bower_components/jquery/dist/jquery.js') 
-  script(src='/javascripts/routes.js')

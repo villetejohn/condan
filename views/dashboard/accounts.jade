@@ -7,13 +7,19 @@ block content
   .container-fluid
     .row
       main.col-md-9.ml-sm-auto.col-lg-10.pt-3.px-4(role='main')
+        .d-flex.justify-content-between.flex-wrap.flex-md-nowrap.align-items-center.pb-2
+          h1.h4 Accounts
+          .btn-toolbar.mb-2.mb-md-0
+            .btn-group.mr-2
+              a.btn.btn-sm.btn-outline-secondary(href='/user/register') Add New Account
         table.incident-reports-table.table.table-hover
             thead
                 tr
                   th Name
                   th Email
                   th Username
-                  th Validated
+                  th Ownership
+                  th Unit
                   th
             tbody#users-table-body
                 each user, i in users
@@ -21,13 +27,17 @@ block content
                     td #{user.name}
                     td #{user.email}
                     td #{user.username}
-                    td #{user.is_validated}
+                    td #{user.type}
+                    td #{user.unit}
                     td 
-                      button.btn.btn-primary.btn-sm(type='button', data-toggle='modal', data-target='#modal-#{i}')
+                      a.btn.btn-primary.btn-sm(href='/user/edit/#{user.id}')
                         | Edit
                       if !(user.is_validated)
                         a.btn.btn-outline-primary.btn-sm(href='/dashboard/accounts/activate/#{user._id}')
                           | Activate
+                      else 
+                        a.btn.btn-outline-primary.btn-sm(href='/dashboard/accounts/deactivate/#{user._id}')
+                          | Deactivate
 
         //- each incident, i in incidents               
         //-   .modal.fade(tabindex='-1', role='dialog', id='modal-#{i}')
@@ -71,5 +81,5 @@ block content
   script(src='/bower_components/jquery/dist/jquery.js')
   script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js')
   script(src='/javascripts/tablefilter.js')
-  script(src='/javascripts/tablemodal.js')
+
 

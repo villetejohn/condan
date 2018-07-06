@@ -9,12 +9,107 @@ var User = require('../models/user');
 // Route:  /user/register
 // GET Request
 router.get('/register', function(req, res, next) {
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated() && !req.user.is_admin) {
     res.redirect('/dashboard/home')
   } else {
     res.render('user/register');
   }
 });
+
+// Route: /user/edit/:id
+// GET Request
+router.get('/edit/:id', ensureAuthenticated, function(req, res, next) {
+	if (req.user.is_admin) {
+		User.findById(req.params.id, function(err, user) {
+			if(err) {
+				console.log(err);
+			} else {
+        res.render('user/edit', {  
+          formDetails: {
+            name: user.name,
+            type: user.type,
+            unit: user.unit,
+            email: user.email,
+            username: user.username,
+            is_validated: user.is_validated,
+            _id: req.params.id
+          }
+        });
+        return;
+			}
+		});
+	} else {
+		res.redirect('/dashboard/home');
+	}
+});
+
+// Route: /user/edit
+// POST Request
+router.post('/edit', [
+  check('name').not().isEmpty().withMessage('Please enter your name'),
+  check('type').not().isEmpty().withMessage('Please select whether owner or tenant'),
+  check('unit').not().isEmpty().withMessage('Please enter your unit number'),
+  check('email').not().isEmpty().withMessage('Please enter your email'),
+  check('email').isEmail().withMessage('Please enter a valid email'),
+  check('email').custom(async function(value, {req}) {
+    var user = await User.findOne({'email': value});
+    if (user) {
+      return (user._id == req.body._id) ? true : false;
+    } else {
+      return true;
+    }
+  }).withMessage('E-mail is already in use'),
+  check('username').not().isEmpty().withMessage('Please enter your username'),
+  check('username').custom(async function(value, {req}) {
+    var user = await User.findOne({'username': value});
+    if (user) {
+      return (user._id == req.body._id) ? true : false; // false will trigger validation
+    } else {
+      return true;
+    }
+  }).withMessage('Username already in use')
+], function(req, res ,next) {
+  const _id = req.body._id;
+  const name = req.body.name;
+  const type = req.body.type;
+  const unit = req.body.unit;
+  const email = req.body.email;
+  const username = req.body.username;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.render('user/edit', {  
+      errors: errors.array(),
+      formDetails: {
+        name: name,
+        type: type,
+        unit: unit,
+        email: email,
+        username: username,
+        _id: _id
+      }
+    });
+    return;
+    
+  } else {
+    var query = {
+      name: name,
+      type: type,
+      unit: unit,
+      email: email,
+      username: username
+    };
+
+    User.findByIdAndUpdate(req.body._id, {$set: query}, function(err, status) {
+      if(err) {
+        console.log(err);
+      } else {
+        res.redirect('/dashboard/accounts');
+      }
+    });
+  }
+});
+
 
 // Route: /user/register
 // POST Request
@@ -47,6 +142,7 @@ router.post('/register', [
   const username = req.body.username;
   const password = req.body.password;
   const password2 = req.body.password2;
+  const userType = req.body.userType;
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -69,7 +165,7 @@ router.post('/register', [
       unit: unit,
       email: email,
       username: username,
-      password: password
+      password: password,
     });
   
     bcrypt.genSalt(10, function(err, salt) {
@@ -83,6 +179,7 @@ router.post('/register', [
             return;
           } else {
             // res.flash('success', 'You are now registered and can log in');
+            // req.flash('success', 'Account Created!');
             res.redirect('/');
             console.log('save!');
           }

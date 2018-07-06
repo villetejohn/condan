@@ -32,18 +32,24 @@ block content
               if formDetails
                 .form-group
                   label(for='issue') Issue
-                  textarea#issue.form-control(rows='3', name="issue", required='true') #{formDetails.issue}
+                  textarea#issue.form-control(rows='3', name="issue", required='true', maxlength='500') #{formDetails.issue}
                 .form-group
                   label(for='location') Location
-                  input#location.form-control(type='text', name="location", required='true', value='#{formDetails.location}')
+                  input#location.form-control(type='text', name="location", required='true', value='#{formDetails.location}', maxlength='160')
               else
                 .form-group
                   label(for='issue') Issue
-                  textarea#issue.form-control(rows='3', name="issue", required='true', placeholder='Send an issue here')
+                  textarea#issue.form-control(rows='3', name="issue", required='true', placeholder='Send an issue here', maxlength='500')
                 .form-group
                   label(for='location') Location
-                  input#location.form-control(type='text', name="location", required='true', placeholder='Location')
+                  input#location.form-control(type='text', name="location", required='true', placeholder='Location', maxlength='160')
 
               if errors
                 p.text-danger.mt-3 #{errors[0].msg}
+
+              if messages
+                each message in messages
+                  p.text-success.mt-3 #{message}
+ 
               button.btn.btn-primary.mb-2(type='submit') Report
+
