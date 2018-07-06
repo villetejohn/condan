@@ -144,12 +144,16 @@ router.post('/incident-report', [
 // Route: dashboard/view-reports
 // GET Request
 router.get('/view-reports', ensureAuthenticated, function(req, res, next) {
-    Incident.find({}, function(err, incidents) {
+    Incident.find({}, null, {sort: '-created_at'}, function(err, incidents) {
         if(err) {
             console.log(err);
         } else {
+            var incidentDates = incidents.map(function(incident) {
+              return moment(incident.created_at).format("dddd, MMMM Do, h:mma");
+            });
             res.render('dashboard/view-report', {
                 incidents: incidents,
+                incidentDates: incidentDates
             });
         }   
     });
@@ -333,7 +337,7 @@ router.get('/booked-amenities', ensureAuthenticated, function(req, res, next) {
 				console.log(err);
 		} else {
 				var bookedStartDates = bookedAmenities.map(function(bookedAmenity) {
-					return moment(bookedAmenity.scheduleStart);
+					return moment(bookedAmenity.scheduleStart).format("dddd, MMMM Do, h:mma");
 				});
 				var bookedEndDates = bookedAmenities.map(function(bookedAmenity) {
 					return moment(bookedAmenity.scheduleStart);
@@ -462,7 +466,7 @@ router.post('/booked-amenities', [
 // GET Request
 router.get('/accounts', ensureAuthenticated, function(req, res, next) {
   if (req.user.is_admin) {
-    User.find({}, function(err, users) {
+    User.find({}, null, {sort: '-created_at'}, function(err, users) {
       if (err) {
         console.log(err);
       } else {
