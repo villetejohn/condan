@@ -19,3 +19,10 @@ a {
   padding: 15px;
   margin: 0 auto;
 }
+
+/* BOOK AMENITY STYLES*/
+.pending-box {
+  overflow-y: auto;
+  max-height: 420px;
+
+}
