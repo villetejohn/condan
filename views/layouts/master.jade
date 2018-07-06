@@ -12,7 +12,7 @@ html
       if user
         nav.navbar.navbar-dark.sticky-top.bg-dark.flex-md-nowrap.p-0
           a.navbar-brand.col-sm-3.col-md-2.mr-0(href='#') Hi, #{user.name}
-          input#incidents-table-filter.form-control.form-control-dark.w-100(type='text', placeholder='Search', aria-label='Search')
+          input#table-filter.form-control.form-control-dark.w-100(type='text', placeholder='Search', aria-label='Search')
           ul.navbar-nav.px-3
             li.nav-item.text-nowrap
               a.nav-link(href='/user/logout') Sign out
@@ -23,13 +23,12 @@ html
           .sidebar-sticky
             ul.nav.flex-column.sidebar-nav
               li.nav-item
-                a.nav-link.active(href='/dashboard/home')
+                a.nav-link(href='/dashboard/home')
                   span
                   if user.is_admin
                     | Home 
                   else
                     | Announcements
-
               if user.is_admin
                 li.nav-item
                   a.nav-link(href='/dashboard/announcement')
